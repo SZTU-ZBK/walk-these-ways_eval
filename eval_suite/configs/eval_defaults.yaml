@@ -10,14 +10,14 @@ pitch_cmd: 0.0
 roll_cmd: 0.0
 stance_width_cmd: 0.25
 
-# 速度搜索：0.2 m/s 粒度（二分约 4–5 次 trial）；变体内复用 env
+# 速度搜索：0.2 m/s 粒度；episode 5 s（250 步 × dt=0.02 s）
 speed_min: 0.0
 speed_max: 4.0
 speed_precision: 0.2
 speed_tracking_threshold: 0.3
-speed_episode_steps: 60
-speed_warmup_steps: 15
-speed_steady_steps: 30
+speed_episode_steps: 250
+speed_warmup_steps: 50
+speed_steady_steps: 100
 
 yaw_test_vx: 1.5
 yaw_test_vy: 0.0
@@ -26,9 +26,9 @@ yaw_test_wz: 0.0
 stability_vx: 1.5
 stability_vy: 0.0
 stability_wz: 0.0
-stability_episode_steps: 60
-stability_warmup_steps: 15
-stability_steady_steps: 35
+stability_episode_steps: 250
+stability_warmup_steps: 50
+stability_steady_steps: 150
 
 sym_pool: eval_suite/assets/symmetric_v64
 asym_pool: eval_suite/assets/full_asym_v64

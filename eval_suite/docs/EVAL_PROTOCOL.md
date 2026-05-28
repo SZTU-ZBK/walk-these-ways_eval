@@ -35,18 +35,16 @@
 
 ### 2. 偏航误差（准确程度 — 直线行走）
 
-命令：`vx=1.5 m/s, vy=0, wz=0`（与稳定性 episode 相同，走直线）。
+命令：`vx=1.5 m/s, vy=0, wz=0`（5 s episode，与稳定性共用同一段 rollout）。
 
-从机体四元数提取 yaw 角，在稳态段（去 warmup 15 步后的 steady 段）计算：
+稳态段：去前 **1 s**（50 步 warmup）后的剩余段。
 
-- **yaw_offset_mean**：相对 warmup 末时刻航向的偏移，\(\text{mean}(|\Delta\text{yaw}|)\)（rad）
-- **yaw_variance**：稳态段 yaw 角方差 \(\text{Var}(\text{yaw})\)（rad²）
-
-时序保存在 `straight_line.npz`（含 `yaw`, `yaw_drift`）。
+- **yaw_offset_mean**：相对 warmup 末航向的平均偏移 mean(|\Δyaw|)（rad）
+- **yaw_variance**：稳态段 yaw 角方差 Var(yaw)（rad²）
 
 ### 3. Base 方差（稳定性）
 
-`vx=1.5` 直线行走，稳态段（后 3 s）的 `var_vx/vy/roll/pitch` 等权均值 → `base_variance_scalar`。
+`vx=1.5` 直线行走，**5 s** episode。稳态段为**最后 3 s**（150 步）的 `var_vx/vy/roll/pitch` 等权均值 → `base_variance_scalar`。
 
 ### 4. 输出功率（能量效率）
 
@@ -113,14 +111,14 @@ eval_suite/results/<timestamp>/
 
 ## 预计耗时
 
-默认 **快速配置**（0.2 m/s 速度粒度、60 步 episode、变体内复用 env）：
+默认配置：**5 s episode**（250 步，dt=0.02 s）、0.2 m/s 速度粒度、变体内复用 env。
 
 | 操作 | 耗时 |
 |------|------|
 | 离线 smoke test | <1 秒 |
-| baseline 单变体 | ~15–20 秒 |
-| **全量 33 变体**（1+16+16，默认） | **~10–15 分钟** |
-| 全量 129 变体（num_variants=64） | ~40–60 分钟 |
+| baseline 单变体 | ~40–60 秒 |
+| **全量 33 变体**（1+16+16） | **~30–45 分钟** |
+| 全量 129 变体（num_variants=64） | ~2–3 小时 |
 
 主要时间花在每个 URDF 变体重建 Isaac Gym 环境（~5–8 秒/次）。变体内复用 env，速度搜索不再重复 load。
 
