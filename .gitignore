@@ -68,3 +68,9 @@ docker/rsc
 *.jit
 tmp
 *.tar
+*.tar.gz
+IsaacGym_Preview_4_Package.tar.gz
+
+# Morphology eval suite outputs
+eval_suite/assets/
+eval_suite/results/

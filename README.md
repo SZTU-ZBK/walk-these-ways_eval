@@ -101,7 +101,43 @@ pip3 install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu
 
 #### Install the `go1_gym` package
 
-In this repository, run `pip install -e .`
+In this repository, run:
+
+```bash
+pip install -e .
+```
+
+### 快速配置（AutoDL — 独立 Isaac Gym 环境）
+
+**不要复用 `isaaclab` conda。** walk-these-ways 需要 Isaac Gym Preview 4（Python 3.8 + torch 1.10），与 Isaac Lab（Python 3.10）不兼容。请单独创建 `isaacgym` 环境。
+
+完整说明：[eval_suite/docs/ENV_SETUP.md](eval_suite/docs/ENV_SETUP.md)
+
+```bash
+cd /root/autodl-tmp/walk-these-ways_eval
+
+# 1) 创建独立 conda 环境（Python 3.8 + PyTorch + go1_gym）
+bash eval_suite/scripts/setup_isaacgym_conda.sh
+
+# 2) 激活环境
+source eval_suite/scripts/activate_eval_env.sh
+
+# 3) 安装 Isaac Gym（将 tar 包放到 /root/autodl-tmp/ 后）
+bash eval_suite/scripts/install_isaacgym_hint.sh
+
+# 4) 验证
+python scripts/test.py
+python -m eval_suite.scripts.check_prerequisites
+```
+
+一键形态学评估：
+
+```bash
+source eval_suite/scripts/activate_eval_env.sh
+bash eval_suite/scripts/run_morphology_eval.sh
+```
+
+评估协议：[eval_suite/docs/EVAL_PROTOCOL.md](eval_suite/docs/EVAL_PROTOCOL.md)
 
 ### Verifying the Installation
 
@@ -265,4 +301,6 @@ To deploy on the robot, replace the line https://github.com/Improbable-AI/walk-t
 | ----------- | ----------- | ---------- |
 | Out of disk space     | If you run out of disk space during `cd ~/go1_gym/go1_gym_deploy/installer && ./install_deployment_code.sh` consider changing the script to use `192.168.123.13` instead (at least in my Go1 Edu with 3 Jetson nano, I only had the required disk space to copy the tar and extract the image in only `192.168.123.13`). Alternatively, consider deploying on an external PC.       | https://github.com/Improbable-AI/walk-these-ways/issues/7 |
 | `lcm_position` syntax error  | When deploying with `sudo ./start_unitree_sdk.sh` on an external PC/NUC, if you get the following error: `./lcm_position: 1: Syntax error: word unexpected (expecting ")")`, It is likely because the ./lcm_position has been compiled for ARM aarch64 (to run on the jetson), please recompile it for your architecture(external PC/ NUC) using https://github.com/Improbable-AI/unitree_legged_sdk.        | https://github.com/Improbable-AI/walk-these-ways/issues/7 |
+| `ModuleNotFoundError: isaacgym` | 未安装 Isaac Gym Preview 4，或 Python 环境不对。从 NVIDIA 下载安装后执行 `cd isaacgym/python && pip install -e .`；AutoDL 上可运行 `bash eval_suite/scripts/install_isaacgym_hint.sh`。 | eval_suite |
+| `pip install -e .` numpy 冲突 | `setup.py` 锁定 `numpy==1.23.5`，Isaac Lab 环境可能已是更新版本。使用 `pip install -e . --no-deps` 并 `source eval_suite/scripts/activate_eval_env.sh`。 | eval_suite |
 
